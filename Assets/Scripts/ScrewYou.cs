@@ -1,24 +1,28 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.XR.Content.Interaction;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class ScrewYou : MonoBehaviour
 {
+    public Transform ParentTransform,AttachTransform;
+ 
     public int numberOfThreads = 10;    
+
     public float pitch = 0.1f, torqueResistanceFactor = 0.5f,smoothingFactor = 0.1f;
-    public float baseRotationSpeed = 100f; 
-    public float currentRotation = 0f; 
-    public float totalRotation;
-    public Vector3 axis = Vector3.up;   
+    public float baseRotationSpeed = 100f, currentRotation = 0f,totalRotation;
     private float totalDistance, maxNumOfRotations, currentRotations = 0, smoothedRotDir = 0f;
 
+    public Vector3 axis = Vector3.up;   
 
-    public XRKnob knob;
+    public XRKnob parentKnob, driverKnob;
+
+    public Tool CurrentTool;
 
     public enum InteractionType
     {
         Hand,
-        ScrewDriver
+        Tool
     }
 
 
@@ -27,6 +31,7 @@ public class ScrewYou : MonoBehaviour
         totalRotation = 360f * numberOfThreads;
         totalDistance = pitch * numberOfThreads;
         maxNumOfRotations = totalDistance/pitch;
+        driverKnob = parentKnob;
     }
 
 
@@ -38,9 +43,9 @@ public class ScrewYou : MonoBehaviour
     private void PerformHandRotation()
     {
         //float input = Input.GetAxis("Horizontal");
-        Debug.Log($"rotDir: {knob.rotDir}");
+        Debug.Log($"rotDir: {driverKnob.rotDir}");
 
-        smoothedRotDir = Mathf.Lerp(smoothedRotDir, knob.rotDir, smoothingFactor);
+        smoothedRotDir = Mathf.Lerp(smoothedRotDir, driverKnob.rotDir, smoothingFactor);
         float rotationSpeed = baseRotationSpeed + (1f - torqueResistanceFactor * (currentRotation / totalRotation));
         //float rotationThisFrame = knob.rotDir * rotationSpeed * Time.deltaTime;
         float rotationThisFrame = smoothedRotDir * rotationSpeed * Time.deltaTime;
@@ -62,8 +67,25 @@ public class ScrewYou : MonoBehaviour
 
         Vector3 translation = pitch * (rotationThisFrame / 360f) * axis.normalized;
         transform.localPosition += translation;
+        if (CurrentTool != null)
+            CurrentTool.transform.localPosition += translation;
         currentRotations = Mathf.FloorToInt(currentRotation / 360f);
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.GetComponent<Tool>() != null) 
+        {
+            CurrentTool = other.GetComponent<Tool>();
+            CurrentTool.parentTransform.rotation = ParentTransform.rotation;
+            CurrentTool.parentTransform.position = AttachTransform.position;
+            CurrentTool.grabInteractable.enabled = false;
+            CurrentTool.knob.enabled = false;
+            CurrentTool.knob.enabled = true;
+            //CurrentTool.transform.SetParent(transform);
+            driverKnob = CurrentTool.knob;
+            parentKnob.enabled = false;
+        }
+    }
 
 }

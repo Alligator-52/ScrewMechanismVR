@@ -262,8 +262,8 @@ namespace UnityEngine.XR.Content.Interaction
         float m_CumulativeRotation = 0.0f;
         public int rotDir = 0;
         const float rotationThreshold = 0.01f;
-        public ScrewYou screw;
-        public bool isRestricting;
+        //public ScrewYou screw;
+        //public bool isRestricting;
         void UpdateRotation(bool freshCheck = false)
         {
             // Are we in position offset or direction rotation mode?
@@ -353,12 +353,12 @@ namespace UnityEngine.XR.Content.Interaction
             if (rotationDelta > 0)
             {
                 //Debug.Log("Rotating Clockwise");
-                rotDir = 1;
+                rotDir = -1;
             }
             else if (rotationDelta < 0)
             {
                 //Debug.Log("Rotating Counterclockwise");
-                rotDir = -1;
+                rotDir = 1;
             }
             else
             {
