@@ -37,10 +37,10 @@ public class ScrewYou : MonoBehaviour
 
     void Update()
     {
-        PerformHandRotation();
+        PerformScrewRotation();
     }
 
-    private void PerformHandRotation()
+    private void PerformScrewRotation()
     {
         //float input = Input.GetAxis("Horizontal");
         Debug.Log($"rotDir: {driverKnob.rotDir}");
@@ -77,7 +77,12 @@ public class ScrewYou : MonoBehaviour
         if(other.GetComponent<Tool>() != null) 
         {
             CurrentTool = other.GetComponent<Tool>();
-            CurrentTool.parentTransform.rotation = ParentTransform.rotation;
+            Quaternion parentRotation = ParentTransform.rotation;
+            Quaternion complementaryRotation = Quaternion.Euler(parentRotation.eulerAngles.x, 
+                                                                parentRotation.eulerAngles.y, 
+                                                                parentRotation.eulerAngles.z);
+
+            CurrentTool.parentTransform.rotation = ParentTransform.rotation * Quaternion.Euler(0,180,180);
             CurrentTool.parentTransform.position = AttachTransform.position;
             CurrentTool.grabInteractable.enabled = false;
             CurrentTool.knob.enabled = false;

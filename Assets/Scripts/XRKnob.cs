@@ -122,7 +122,7 @@ namespace UnityEngine.XR.Content.Interaction
 
         [SerializeField]
         [Tooltip("How much controller rotation ")]
-        float m_TwistSensitivity = 1.5f;
+        public float m_TwistSensitivity = 1.5f;
 
         [SerializeField]
         [Tooltip("Events to trigger when the knob is rotated")]
@@ -353,12 +353,12 @@ namespace UnityEngine.XR.Content.Interaction
             if (rotationDelta > 0)
             {
                 //Debug.Log("Rotating Clockwise");
-                rotDir = -1;
+                rotDir = 1;
             }
             else if (rotationDelta < 0)
             {
                 //Debug.Log("Rotating Counterclockwise");
-                rotDir = 1;
+                rotDir = -1;
             }
             else
             {
@@ -477,15 +477,15 @@ namespace UnityEngine.XR.Content.Interaction
             }
         }
 
-        void OnValidate()
-        {
-            if (m_ClampedMotion)
-                m_Value = Mathf.Clamp01(m_Value);
+        //void OnValidate()
+        //{
+        //    if (m_ClampedMotion)
+        //        m_Value = Mathf.Clamp01(m_Value);
 
-            if (m_MinAngle > m_MaxAngle)
-                m_MinAngle = m_MaxAngle;
+        //    if (m_MinAngle > m_MaxAngle)
+        //        m_MinAngle = m_MaxAngle;
 
-            SetKnobRotation(ValueToRotation());
-        }
+        //    SetKnobRotation(ValueToRotation());
+        //}
     }
 }
